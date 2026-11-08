@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>етичний хакер реальності · інсталяція</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Comfortaa:wght@700&family=Cormorant+Garamond:ital,wght@1,500&family=IBM+Plex+Mono:wght@700&family=Lobster&family=Marck+Script&family=Old+Standard+TT:ital@1&family=Press+Start+2P&family=Rubik+Mono+One&family=Stalinist+One&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--hf:'Cormorant Garamond',Georgia,serif}
+html,body{margin:0;background:#fff}
+body:not(.on){overflow:hidden;height:100vh}
+#track{height:750vh}
+#sky,#grain,#ads,#cv{position:fixed;inset:0}
+#cv,#grain{pointer-events:none}
+#ads{overflow:hidden;pointer-events:none}
+.b{position:absolute;overflow:hidden;padding:6px 8px;border:2px solid #000;box-shadow:3px 3px 0 #000;border-radius:calc(var(--w,0)*50%);opacity:calc(1 - var(--w,0)*.5);transition:opacity 1.6s,scale 1.6s;animation:fl var(--fl) infinite,dr var(--d) ease-in-out infinite alternate;box-sizing:border-box}
+.b.gone{opacity:0!important;scale:1.12}
+.wt .b{box-shadow:none;border-color:#fff6}
+@keyframes dr{to{translate:var(--dx) var(--dy2)}}
+@keyframes fl{0%,90%,100%{rotate:0deg}93%{rotate:1.2deg}96%{rotate:-1.2deg}}
+.hl{font-weight:700;line-height:1.1}
+.wd{display:inline-block;white-space:nowrap}
+.l{display:inline-block;font-family:var(--f);transform:translateY(var(--dy)) rotate(var(--r)) scale(var(--s));transition:transform 1.4s cubic-bezier(.2,.8,.2,1),opacity 2s}
+.l.o{font-family:var(--hf);font-style:italic;font-weight:500;transform:none}
+.l.d{opacity:0}
+.cta{position:absolute;left:6px;bottom:6px;padding:2px 8px;font-size:13px;border:2px solid #000}
+small{position:absolute;right:22px;top:2px;font:9px sans-serif;opacity:.6}
+.x{position:absolute;right:3px;top:0;font:700 16px/1 sans-serif;font-style:normal;padding:2px 5px;background:#0007;color:#fff;cursor:pointer;pointer-events:auto}
+.wt .x{pointer-events:none}
+#ld{position:fixed;left:0;right:0;bottom:0;z-index:50;pointer-events:none;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:repeating-linear-gradient(45deg,#ffeb3b 0 14px,#111 14px 28px);text-align:center}
+#ld span{background:#ffeb3b;color:#111;font:700 13px 'IBM Plex Mono',monospace;padding:3px 10px}
+#end{position:fixed;left:0;right:0;bottom:0;padding:0 16px calc(18px + env(safe-area-inset-bottom,0px));text-align:center;font:italic 500 17px var(--hf);color:#5a4326;opacity:0;pointer-events:none;line-height:1.4}
+#end small{position:static;display:block;font:12px var(--hf);opacity:.7}
+#hint{transition:opacity 2s}
+#start{position:fixed;inset:0;z-index:99;background:#000a;display:flex;align-items:center;justify-content:center}
+#start div{background:#ff2d95;color:#fff176;border:4px solid #000;box-shadow:8px 8px 0 #000;padding:22px;text-align:center;font:700 26px/1.15 'Bebas Neue',sans-serif;max-width:78vw;animation:fl 1s infinite}
+#go{display:block;margin:16px auto 0;background:#fff176;color:#d50000;border:3px solid #000;font:700 22px 'Bebas Neue',sans-serif;padding:8px 26px;cursor:pointer}
+#start small{position:static;display:block;color:#fff;margin-top:10px;font-size:12px}
+</style></head><body>
+<div id="sky"></div><div id="grain"></div><div id="ads"></div><canvas id="cv"></canvas>
+<div id="ld"><span>↓ САЙТ ЗАВАНТАЖУЄТЬСЯ… <b id="pc">0%</b></span></div>
+<div id="end"><span id="hint">зупинись — і слід прочитається</span><br>Михайло Жаржайло, «етичний хакер реальності»<small>litcentr.in.ua · звук за бажанням</small></div>
+<div id="start"><div>ВІТАЄМО!<br>ВИ — 1 000 000-й ВІДВІДУВАЧ<button id="go">ЗАБРАТИ</button><small>(увімкніть звук)</small></div></div>
+<div id="track"></div>
+<svg width="0" height="0" style="position:absolute"><filter id="rp"><feTurbulence type="fractalNoise" baseFrequency=".008 .013" numOctaves="2" seed="4"><animate attributeName="baseFrequency" dur="16s" values=".008 .013;.013 .007;.008 .013" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" scale="0" id="dm" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+<script>
+const $=s=>document.querySelector(s),R=Math.random,pick=a=>a[R()*a.length|0];
+const sm=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)};
+const ads=$('#ads'),cv=$('#cv'),ctx=cv.getContext('2d'),sky=$('#sky');
+const LINES=["навіщо нам гаряча лінія якщо є гарячий чай","телефон у режимі вертольотика","загугли без покриття","подзвони без паличок","зброя вусів","вітровлоги","кіт на плацу наплакав","дон кіхот і санчастина","тхне безпекою","пшик доступних мереж","метадані молота","тривогозахланність","радіокучугура","риба птиця холоститься","хліб лежав маслом угору й на нього так ніхто і наступив","солдати-монади шикуються по відділеннях але щоразу довільно","номери на шоломах лотерейні кульки","пішак сигналу","смузі перешкод","вервиця нас із шиї дороги впала у комір лісу","ВО вірша","домовинофон","чернетка вихідного чистовик буднів","малюнки там само де паролі","паморозь у голові","етичний хакер реальності","презумпція непихатості","острівець безпеки на річці вулиці","викапаний каяк","на звороті мапи вочевидь CVV-код","хіть-хіть-падьом","поштомати героїв","ґрантові води","вибух у звільнення","мікроквазар казарми"];
+const CTA=["ЗАБРАТИ","ДЕТАЛЬНІШЕ","ВСТАНОВИТИ","ПРИЙНЯТИ ВСЕ","ВИГРАТИ","−90%","ПІДПИСАТИСЬ","ДОЗВОЛИТИ","немає маржі","почуваюся npc"];
+const SAND=["якщо підлогу помили піском ніг|витри її водою рук","прикопав у повітрі димок цигарки|наче в пісочку","острівець безпеки|на річці вулиці","викапаний каяк","шпиталь поїхав|шатро залишилось","чернетка вихідного|чистовик буднів","на звороті мапи|вочевидь CVV-код","вервиця нас|із шиї дороги|впала у комір лісу"];
+const FONTS=["'Old Standard TT',serif","Lobster,cursive","'Press Start 2P',monospace","'Bebas Neue',sans-serif","'Stalinist One',sans-serif","'Marck Script',cursive","'IBM Plex Mono',monospace","Comfortaa,sans-serif","'Rubik Mono One',sans-serif"];
+const PAL=[['#ff2d95','#fff176'],['#00e5ff','#d500f9'],['#ffeb3b','#e91e63'],['#76ff03','#311b92'],['#ff6d00','#ffffff'],['#651fff','#ffff00'],['#00e676','#ff1744'],['#ffffff','#ff1744']];
+const ST=[[0,255,255,255],[.25,238,246,255],[.45,12,70,104],[.72,18,110,128],[.86,150,205,205],[.95,226,208,164],[1,232,214,170]];
+let W,H,D,started=false,p=0,h=0,w=0,s=0,lastP=-1,now=0,A=null;
+function size(){W=innerWidth;H=innerHeight;D=Math.min(2,devicePixelRatio||1);cv.width=W*D;cv.height=H*D;ctx.setTransform(D,0,0,D,0,0)}
+size();addEventListener('resize',size);
+$('#grain').style.backgroundImage='url("data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2"/><feColorMatrix values="0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .5 0"/></filter><rect width="200" height="200" filter="url(#n)"/></svg>')+'")';
+function L(t,k){return t.split(' ').map(wd=>'<span class="wd">'+[...wd].map(ch=>`<span class="l" style="--f:${pick(FONTS)};--dy:${((R()-.5)*14*k).toFixed(1)}px;--r:${((R()-.5)*40*k).toFixed(0)}deg;--s:${(.7+R()*.9).toFixed(2)}" data-t="${(.05+R()*.9).toFixed(2)}" data-u="${(.64+R()*.2).toFixed(2)}">${ch}</span>`).join('')+'</span>').join(' ')}
+function mk(depth,box){
+ const el=document.createElement('div');el.className='b';
+ const bw=box?box.w*(.4+R()*.2):90+R()*230,bh=box?box.h*(.4+R()*.25):50+R()*180;
+ const x=box?R()*(box.w-bw):R()*(W-bw*.6)-bw*.2,y=box?R()*(box.h-bh):R()*(H-bh*.6)-bh*.2;
+ const [bg,fg]=pick(PAL);
+ el.style.cssText=`left:${x}px;top:${y}px;width:${bw}px;height:${bh}px;background:${bg};color:${fg};z-index:${R()*9|0};--d:${5+R()*8}s;--fl:${3+R()*6}s;--dx:${(R()-.5)*30}px;--dy2:${(R()-.5)*30}px`;
+ const empty=!box&&R()<w*.85;
+ if(!empty){el.innerHTML=`<i class="x">×</i><small>реклама</small><div class="hl" style="font-size:${12+R()*14}px">${L(pick(LINES),depth+1)}</div><div class="cta" style="background:${fg};color:${bg}">${L(pick(CTA),1)}</div>`;
+  if(depth<2&&bh>90&&R()<.55)el.append(mk(depth+1,{w:bw,h:bh}))}
+ return el}
+function kill(el){if(!el.isConnected||el._k)return;el._k=1;el.classList.add('gone');setTimeout(()=>el.remove(),1700)}
+function spawn(){const el=mk(0);ads.append(el);applyL(el);setTimeout(()=>kill(el),3000+R()*8000)}
+function applyL(r){r.querySelectorAll('.l').forEach(l=>{l._t??=+l.dataset.t;l._u??=+l.dataset.u;l.classList.toggle('o',l._t<h);l.classList.toggle('d',p>l._u)})}
+ads.addEventListener('click',e=>{if(e.target.classList.contains('x')){kill(e.target.parentElement);if(p<.25){spawn();spawn()}hit(4200,.03)}});
+setInterval(()=>{if(document.hidden)return;const k=Math.min(1.3,Math.max(.55,W*H/700000));
+ const T=p>.88?0:Math.round((p<.05?16:30)*k*(1-sm(.5,.88,p)));
+ const live=[...ads.querySelectorAll(':scope>.b:not(.gone)')];
+ for(let i=0;i<3&&live.length+i<T;i++)spawn();
+ if(live.length>T+1)kill(live[0]);
+ if(w>.25&&R()<.6){ripple(R()*W,R()*H);plash(.15)}},400);
+// ripples & footprints
+const rip=[],pr=[];let lw=null,lp=null,side=1,lastMove=0,si=0;
+function ripple(x,y){rip.push({x,y,t:now,m:110+R()*150});if(rip.length>36)rip.shift()}
+function move(x,y){if(!started)return;
+ if(w>.12&&s<.6){if(!lw||Math.hypot(x-lw.x,y-lw.y)>38){ripple(x,y);plash(.4);lw={x,y}}}
+ else if(s>.5){lastMove=now;if(!lp){lp={x,y};return}
+  const dx=x-lp.x,dy=y-lp.y,d=Math.hypot(dx,dy);if(d<62)return;
+  side*=-1;pr.push({x:x-dy/d*11*side,y:y+dx/d*11*side,a:Math.atan2(dy,dx),b:now+500,ta:0,tx:SAND[si++%SAND.length].split('|')});
+  lp={x,y};step()}}
+addEventListener('pointermove',e=>move(e.clientX,e.clientY));
+addEventListener('touchmove',e=>{const t=e.touches[0];if(t)move(t.clientX,t.clientY)},{passive:true});
+addEventListener('scroll',()=>{if(w>.15&&R()<.25){ripple(R()*W,R()*H);plash(.2)}},{passive:true});
+function bgc(){let i=0;while(i<ST.length-2&&p>ST[i+1][0])i++;const a=ST[i],b=ST[i+1],k=Math.min(1,Math.max(0,(p-a[0])/(b[0]-a[0])));return`rgb(${[1,2,3].map(j=>a[j]+(b[j]-a[j])*k|0)})`}
+function frame(t){now=t;
+ const mx=document.documentElement.scrollHeight-innerHeight;p=mx>0?Math.min(1,scrollY/mx):0;
+ h=sm(.28,.6,p);w=sm(.18,.45,p)*(1-sm(.8,.9,p));s=sm(.86,.96,p);
+ if(Math.abs(p-lastP)>.002){lastP=p;applyL(ads);sky.style.background=bgc();
+  $('#grain').style.opacity=(s*.55).toFixed(2);$('#end').style.opacity=sm(.93,1,p).toFixed(2);
+  $('#ld').style.opacity=1-sm(.8,.88,p);$('#pc').textContent=Math.min(99,p*100|0)+'%';
+  ads.style.setProperty('--w',w.toFixed(3));ads.classList.toggle('wt',w>.25);
+  $('#dm').setAttribute('scale',(w*46).toFixed(1));
+  ads.style.filter=w>.02?`url(#rp) grayscale(${w*.7}) sepia(${w*.9}) hue-rotate(${w*165|0}deg) saturate(${(1+w).toFixed(2)})`:'none'}
+ ctx.clearRect(0,0,W,H);
+ for(let i=rip.length-1;i>=0;i--){const r=rip[i],rad=(t-r.t)/1000*70;if(rad>r.m){rip.splice(i,1);continue}
+  const al=(1-rad/r.m)*.7*sm(.15,.35,p);ctx.strokeStyle=`rgba(230,248,255,${al})`;ctx.lineWidth=1.5;
+  for(let k=0;k<3;k++){const q=rad-k*14;if(q>0){ctx.beginPath();ctx.ellipse(r.x,r.y,q,q*.5,0,0,7);ctx.stroke()}}}
+ const still=t-lastMove>700,last=pr[pr.length-1];
+ for(let i=pr.length-1;i>=0;i--){const f=pr[i],age=t-f.b;if(age>50000){pr.splice(i,1);continue}if(age<0)continue;
+  const a=Math.min(1,age/900)*(1-Math.min(1,Math.max(0,(age-20000)/30000)));
+  ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.a);
+  ctx.fillStyle=`rgba(105,80,45,${a*.5})`;ctx.beginPath();ctx.ellipse(0,0,13,6.5,0,0,7);ctx.ellipse(-16,0,5,4.5,0,0,7);ctx.fill();
+  ctx.strokeStyle=`rgba(255,246,220,${a*.55})`;ctx.lineWidth=1.2;ctx.beginPath();ctx.ellipse(-.8,-.8,13.5,7,0,0,7);ctx.stroke();ctx.restore();
+  f.ta+=((f===last&&still&&s>.5?1:0)-f.ta)*.04;
+  if(f.ta>.02){ctx.font='italic 500 22px "Cormorant Garamond",Georgia,serif';ctx.textAlign='center';ctx.fillStyle=`rgba(70,50,28,${f.ta*.85})`;
+   const cx=Math.min(W-110,Math.max(110,f.x));f.tx.forEach((ln,j)=>ctx.fillText(ln,cx,f.y+30+j*24));
+   if(f.ta>.5)$('#hint').style.opacity=0}}
+ au();requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+for(let i=0;i<14;i++)spawn();
+// audio
+function startAudio(){const c=new(window.AudioContext||window.webkitAudioContext)();c.resume();
+ const mg=c.createGain(),cp=c.createDynamicsCompressor();mg.connect(cp);cp.connect(c.destination);
+ const el=c.createGain();el.connect(mg);const dl=c.createDelay(1),fb=c.createGain(),lf=c.createBiquadFilter();
+ dl.delayTime.value=.34;fb.gain.value=.4;lf.frequency.value=2400;el.connect(dl);dl.connect(lf);lf.connect(fb);fb.connect(dl);lf.connect(mg);
+ const nat=c.createGain();nat.connect(mg);
+ const nb=c.createBuffer(1,c.sampleRate*2,c.sampleRate),dd=nb.getChannelData(0);for(let i=0;i<dd.length;i++)dd[i]=R()*2-1;
+ const nz=loop=>{const n=c.createBufferSource();n.buffer=nb;n.loop=loop;return n};
+ const root=110,CL=[1,1.0595,1.4142,1.8877,2.1189],HA=[1,1.5,2,2.5,3];
+ const V=CL.map((r,i)=>{const o=c.createOscillator(),f=c.createBiquadFilter(),g=c.createGain();o.type='sawtooth';o.frequency.value=root*r;f.type='lowpass';f.frequency.value=800;g.gain.value=.03;o.connect(f);f.connect(g);g.connect(el);o.start();return{o,f,g,i}});
+ const S=HA.map(r=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=root*r;g.gain.value=0;o.connect(g);g.connect(el);o.start();return{o,g}});
+ const bed=(f,dst)=>{const n=nz(true),b=c.createBiquadFilter(),g=c.createGain();b.type='lowpass';b.frequency.value=f;g.gain.value=0;n.connect(b);b.connect(g);g.connect(dst);n.start();return g};
+ const wg=bed(650,nat),sg=bed(500,nat),lfo=c.createOscillator(),lg=c.createGain();lfo.frequency.value=.09;lg.gain.value=0;lfo.connect(lg);lg.connect(sg.gain);lfo.start();
+ A={c,el,nat,nz,V,S,wg,sg,lg,root,CL,HA,n:0};setInterval(tick,175)}
+function nzHit(dst,type,f1,f2,v,dur,q){const c=A.c,t=c.currentTime,n=A.nz(false),b=c.createBiquadFilter(),g=c.createGain();
+ b.type=type;b.Q.value=q||1;b.frequency.setValueAtTime(f1,t);b.frequency.exponentialRampToValueAtTime(f2,t+dur);
+ g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0005,t+dur);n.connect(b);b.connect(g);g.connect(dst);n.start(t,R(),dur+.05)}
+function plash(v){if(A)nzHit(A.nat,'bandpass',450+R()*300,1500,v*.6*(.4+w),.35,6)}
+function step(){if(A)nzHit(A.nat,'highpass',2500,2600,.12,.08)}
+function hit(f,v){if(A)nzHit(A.nat,'bandpass',f,f,v,.03,2)}
+function pluck(f,t,type,v){const c=A.c,o=c.createOscillator(),g=c.createGain(),fl=c.createBiquadFilter();
+ o.type=type;o.frequency.value=f;fl.type='lowpass';fl.frequency.setValueAtTime(3500,t);fl.frequency.exponentialRampToValueAtTime(500,t+.3);
+ g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0005,t+.45);o.connect(fl);fl.connect(g);g.connect(A.el);o.start(t);o.stop(t+.5)}
+function tick(){if(!A||document.hidden)return;const c=A.c,t=c.currentTime+.02,n=++A.n,al=1-s*.9;if(al<.12)return;
+ const pat=[0,4,7,11,14,16,14,11],semi=R()<h*.96?pat[n%8]:(R()*34|0)-8,f=A.root*2*2**(semi/12);
+ if(R()<.45+h*.4)pluck(f,t,h>.5?'triangle':'square',.07*al);
+ if(R()<(1-h)*.3)pluck(1500+R()*4500,t,'square',.02);
+ if(h>.4&&n%2)nzHit(A.el,'highpass',7000,7000,.02*h,.04);
+ if(h>.6&&n%4==0){const o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(130,t);o.frequency.exponentialRampToValueAtTime(45,t+.15);g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.0005,t+.2);o.connect(g);g.connect(A.el);o.start(t);o.stop(t+.25)}}
+function au(){if(!A)return;const t=A.c.currentTime;
+ A.V.forEach(v=>{v.o.frequency.setTargetAtTime(A.root*Math.pow(A.CL[v.i],1-h)*Math.pow(A.HA[v.i],h),t,.4);v.o.detune.setTargetAtTime((1-h)*(v.i%2?35:-35),t,.4);v.g.gain.setTargetAtTime((1-h)*.035,t,.3);v.f.frequency.setTargetAtTime(500+700*(1-h),t,.3)});
+ A.S.forEach(o=>o.g.gain.setTargetAtTime(h*.05,t,.6));
+ A.el.gain.setTargetAtTime(1-s*.92,t,.8);A.wg.gain.setTargetAtTime(w*.12,t,.5);
+ const g=s*.16*Math.max(.15,1-pr.length/45);A.sg.gain.setTargetAtTime(g,t,.8);A.lg.gain.setTargetAtTime(g*.7,t,.8)}
+$('#go').onclick=()=>{try{startAudio()}catch(e){}document.body.classList.add('on');$('#start').remove();started=true};
+</script></body></html>
