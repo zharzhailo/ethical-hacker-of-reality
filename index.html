@@ -39,7 +39,8 @@ small{position:absolute;right:22px;top:2px;font:9px sans-serif;opacity:.6}
 #ld span{background:#ffeb3b;color:#111;font:700 13px 'IBM Plex Mono',monospace;padding:3px 10px}
 #end{position:fixed;left:0;right:0;bottom:0;padding:0 16px calc(18px + env(safe-area-inset-bottom,0px));text-align:center;font:italic 500 18px var(--hf);color:#5a4326;opacity:0;pointer-events:none;line-height:1.4;z-index:60;text-shadow:0 0 6px #e2d0a4,0 0 2px #e2d0a4}
 #end small{position:static;display:block;font:12px var(--hf);opacity:.7}
-#back{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;z-index:70;opacity:0;pointer-events:none;font:italic 500 17px var(--hf);color:#5a4326;background:#ffffff59;border:1px solid #5a4326aa;padding:4px 12px;cursor:pointer}
+html{touch-action:manipulation;overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html.lock,html.lock body,html.lock #sky{touch-action:none}
 #hint{transition:opacity 2s}
 #start{position:fixed;inset:0;z-index:99;background:#000a;display:flex;align-items:center;justify-content:center}
 #start div{background:#ff2d95;color:#fff176;border:4px solid #000;box-shadow:8px 8px 0 #000;padding:22px;text-align:center;font:700 26px/1.15 'Bebas Neue',sans-serif;max-width:78vw;animation:fl 1s infinite}
@@ -48,9 +49,8 @@ small{position:absolute;right:22px;top:2px;font:9px sans-serif;opacity:.6}
 </style></head><body>
 <div id="sky"></div><div id="grain"></div><div id="ads"></div><canvas id="cv"></canvas>
 <div id="ld"><span>↓ САЙТ ЗАВАНТАЖУЄТЬСЯ… <b id="pc">0%</b></span></div>
-<div id="end"><span id="hint">зупинись — і слід прочитається</span><br>Михайло Жаржайло, «етичний хакер реальності»<small>litcentr.in.ua · звук за бажанням</small></div>
+<div id="end"><span id="hint">ступай — і слід прочитається</span><br>Михайло Жаржайло, «етичний хакер реальності»<small>litcentr.in.ua · звук за бажанням</small><small>назад до води — свайп вниз / колесо вгору</small></div>
 <div id="start"><div>ВІТАЄМО!<br>ВИ — 1 000 000-й ВІДВІДУВАЧ<button id="go">ЗАБРАТИ</button><small>(увімкніть звук)</small></div></div>
-<button id="back">↑ назад до води</button>
 <div id="track"></div>
 <svg width="0" height="0" style="position:absolute"><filter id="rp"><feTurbulence type="fractalNoise" baseFrequency=".008 .013" numOctaves="2" seed="4"><animate attributeName="baseFrequency" dur="16s" values=".008 .013;.013 .007;.008 .013" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" scale="0" id="dm" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 <script>
@@ -89,15 +89,47 @@ setInterval(()=>{if(document.hidden)return;const k=Math.min(1.5,Math.max(.55,W*H
  if(live.length>T+1)kill(live[0]);
  if(w>.25&&R()<.6){ripple(R()*W,R()*H);plash(.15)}},400);
 // ripples & footprints
-const MIN=matchMedia('(pointer:coarse)').matches?96:62;let cnt=0,lastWave=0;const waves=[];const rip=[],pr=[];let lw=null,lp=null,side=1,lastMove=0,si=0;
-function ripple(x,y){rip.push({x,y,t:now,m:110+R()*150});if(rip.length>36)rip.shift()}
+const MIN=matchMedia('(pointer:coarse)').matches?96:62;let cnt=0,lastWave=0;const waves=[];const rip=[],pr=[];let lw=null,lp=null,side=1,ang=-Math.PI/2;
+// цикл: ноги (текст проступає і тане з кожним кроком) → падіння + відбитки рук → повзе (іноді спираючись на руки) → ноги → …
+const ORDER=['walk','hands','crawl'],PN={walk:()=>14+(R()*9|0),hands:()=>4+(R()*3|0),crawl:()=>8+(R()*6|0)};
+let po=0,pi=0,pn=PN.walk(),ti=0;
+const TX={lines:null,cx:.5,cy:.46,a:0,t:0,lt:0};
+function newText(){TX.lines=SAND[ti++%SAND.length].split('|');TX.a=0;TX.t=0;
+ const edge=R()<.05; // лише ~5% — текст зміщений убік
+ TX.cx=edge?pick([.1,.9]):.5;TX.cy=edge?.25+R()*.5:.44+(R()-.5)*.1}
+newText();
+function drawText(t){
+ const dt=Math.min(100,t-(TX.lt||t));TX.lt=t;TX.a+=(TX.t-TX.a)*(1-Math.exp(-dt/380));
+ const ta=TX.a*sm(.9,.95,p);if(ta<.01)return;
+ const n=TX.lines.length;ctx.save();ctx.font='italic 500 100px Cormorant,Georgia,serif';
+ const mw=Math.max(...TX.lines.map(l=>ctx.measureText(l).width))||1;
+ const fs=Math.min(Math.max(21,Math.min(32,W*.045)),W*.88*100/mw),lh=fs*1.3,hh=n*lh/2;
+ const x=TX.cx*W,y=Math.max(80+hh,Math.min(H-120-hh,TX.cy*H));
+ ctx.font=`italic 500 ${fs}px Cormorant,Georgia,serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+ ctx.shadowColor=`rgba(232,214,170,${ta})`;ctx.shadowBlur=12;ctx.fillStyle=`rgba(70,50,28,${ta*.92})`;
+ TX.lines.forEach((ln,j)=>ctx.fillText(ln,x,y+(j-(n-1)/2)*lh));
+ ctx.restore();if(ta>.35)$('#hint').style.opacity=0}
+function stepAt(x,y,tap){
+ const ph=ORDER[po];let dx=0,dy=0,d=0;
+ if(lp){dx=x-lp.x;dy=y-lp.y;d=Math.hypot(dx,dy);if(!tap&&d<(ph=='walk'?MIN:MIN*.7))return}
+ else if(!tap){lp={x,y};return}
+ if(d>8)ang=Math.atan2(dy,dx);
+ const ux=Math.cos(ang),uy=Math.sin(ang),pv=pr[pr.length-1];
+ side*=-1;let k,px=null,py=0;
+ if(ph=='walk')k='f';
+ else if(ph=='hands')k=pi==0?'x':'h';
+ else{k=pi>0&&pi<pn-1&&R()<.24?'l':'c';if(pv&&pv.k!='f'&&d<MIN*2.2){px=pv.x;py=pv.y}}
+ pr.push({x:x-uy*11*side,y:y+ux*11*side,a:ang,b:now+500,k,sd:side,px,py});
+ lp={x,y};cnt++;step();
+ if(ph=='walk')TX.t=Math.min(1,(pi+1)/6,(pn-pi-1)/6); // з кожним кроком яскравіше → з кожним кроком тане
+ if(++pi>=pn){po=(po+1)%3;pi=0;pn=PN[ORDER[po]]();if(po==0)newText()}
+ if(cnt>10&&now-lastWave>9000){lastWave=now;waves.push({t:now,k:.6+R()*.4});swell()}}
 function move(x,y){if(!started)return;
  if(w>.12&&s<.6){if(!lw||Math.hypot(x-lw.x,y-lw.y)>38){ripple(x,y);plash(.4);lw={x,y}}}
- else if(s>.5){lastMove=now;if(!lp){lp={x,y};return}
-  const dx=x-lp.x,dy=y-lp.y,d=Math.hypot(dx,dy);if(d<(cnt>7?MIN*.7:MIN))return;
-  side*=-1;const pv=pr[pr.length-1],k=cnt<7?'f':cnt==7?'x':'h';cnt++;
-  pr.push({x:x-dy/d*11*side,y:y+dx/d*11*side,a:Math.atan2(dy,dx),b:now+500,ta:0,k,sd:side,px:pv&&k=='h'?pv.x:null,py:pv?pv.y:0,tx:SAND[si++%SAND.length].split('|')});
-  lp={x,y};step();if(cnt>10&&now-lastWave>9000){lastWave=now;waves.push({t:now,k:.6+R()*.4});swell()}}}
+ else if(s>.5)stepAt(x,y,false)}
+function tap(x,y){if(!started)return;
+ if(w>.12&&s<.6){ripple(x,y);plash(.5);lw={x,y}}else if(s>.5)stepAt(x,y,true)}
+addEventListener('pointerdown',e=>tap(e.clientX,e.clientY));
 addEventListener('pointermove',e=>move(e.clientX,e.clientY));
 addEventListener('touchmove',e=>{const t=e.touches[0];if(t)move(t.clientX,t.clientY)},{passive:true});
 addEventListener('scroll',()=>{if(w>.15&&R()<.25){ripple(R()*W,R()*H);plash(.2)}},{passive:true});
@@ -105,10 +137,10 @@ function hand(x,y,sd){ctx.beginPath();ctx.ellipse(x,y,9,8,0,0,7);[[11,-6.5,-.35]
 function bgc(){let i=0;while(i<ST.length-2&&p>ST[i+1][0])i++;const a=ST[i],b=ST[i+1],k=Math.min(1,Math.max(0,(p-a[0])/(b[0]-a[0])));return`rgb(${[1,2,3].map(j=>a[j]+(b[j]-a[j])*k|0)})`}
 function frame(t){now=t;
  const mx=document.documentElement.scrollHeight-innerHeight;p=mx>0?Math.min(1,scrollY/mx):0;
- h=sm(.28,.6,p);w=sm(.18,.45,p)*(1-sm(.8,.9,p));s=sm(.86,.96,p);
+ h=sm(.28,.6,p);w=sm(.18,.45,p)*(1-sm(.8,.9,p));s=sm(.86,.96,p);document.documentElement.classList.toggle('lock',p>.985);
  if(Math.abs(p-lastP)>.002){lastP=p;applyL(ads);sky.style.background=bgc();
   $('#grain').style.opacity=(s*.55).toFixed(2);$('#end').style.opacity=sm(.93,1,p).toFixed(2);
-  $('#ld').style.opacity=1-sm(.8,.88,p);$('#back').style.opacity=sm(.9,.97,p).toFixed(2);$('#back').style.pointerEvents=p>.93?'auto':'none';$('#pc').textContent=Math.min(99,p*100|0)+'%';
+  $('#ld').style.opacity=1-sm(.8,.88,p);$('#pc').textContent=Math.min(99,p*100|0)+'%';
   ads.style.setProperty('--w',w.toFixed(3));ads.classList.toggle('wt',w>.25);
   $('#dm').setAttribute('scale',(w*46).toFixed(1));
   ads.style.filter=w>.02?`url(#rp) grayscale(${Math.min(1,w*1.4)}) sepia(${w*.9}) hue-rotate(${w*165|0}deg) saturate(${(1+w).toFixed(2)})`:'none'}
@@ -116,21 +148,25 @@ function frame(t){now=t;
  for(let i=rip.length-1;i>=0;i--){const r=rip[i],rad=(t-r.t)/1000*70;if(rad>r.m){rip.splice(i,1);continue}
   const al=(1-rad/r.m)*.7*sm(.15,.35,p);ctx.strokeStyle=`rgba(230,248,255,${al})`;ctx.lineWidth=1.5;
   for(let k=0;k<3;k++){const q=rad-k*14;if(q>0){ctx.beginPath();ctx.ellipse(r.x,r.y,q,q*.5,0,0,7);ctx.stroke()}}}
- const still=t-lastMove>700,last=pr[pr.length-1];
+const last=null;
  for(let i=waves.length-1;i>=0;i--){const q=waves[i],dt=(t-q.t)/1000;if(dt>=9){waves.splice(i,1);continue}q.dt=dt;q.f=H+30-Math.sin(dt/9*Math.PI)*H*.6*q.k}
  const wy=waves.length?Math.min(...waves.map(q=>q.f)):H+99;
+function knee(x,y,a){ctx.save();ctx.lineCap='round';ctx.strokeStyle=`rgba(105,80,45,${a*.13})`;ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(x-6,y);ctx.lineTo(x-26,y);ctx.stroke();
+ ctx.fillStyle=`rgba(105,80,45,${a*.5})`;ctx.beginPath();ctx.ellipse(x,y,8,6.5,0,0,7);ctx.moveTo(x-26.5,y-3);ctx.ellipse(x-30,y-3,3.5,2.5,0,0,7);ctx.moveTo(x-26.5,y+3);ctx.ellipse(x-30,y+3,3.5,2.5,0,0,7);ctx.fill();
+ ctx.strokeStyle=`rgba(255,246,220,${a*.5})`;ctx.lineWidth=1.2;ctx.beginPath();ctx.ellipse(x-.8,y-.8,8.5,7,0,0,7);ctx.stroke();ctx.restore()}
  for(let i=pr.length-1;i>=0;i--){const f=pr[i],age=t-f.b;if(age>50000){pr.splice(i,1);continue}if(age<0)continue;
   if(f.y>wy)f.wash=(f.wash||0)+.025;if(f.wash>=1){pr.splice(i,1);continue}const wa=1-(f.wash||0);const a=wa*Math.min(1,age/900)*(1-Math.min(1,Math.max(0,(age-20000)/30000)));
   if(f.px!=null){ctx.strokeStyle=`rgba(105,80,45,${a*.14})`;ctx.lineWidth=16;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(f.px,f.py);ctx.lineTo(f.x,f.y);ctx.stroke()}
   ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.a);ctx.fillStyle=`rgba(105,80,45,${a*.5})`;ctx.strokeStyle=`rgba(255,246,220,${a*.55})`;ctx.lineWidth=1.2;
-  if(f.k=='f'){ctx.beginPath();ctx.ellipse(0,0,13,6.5,0,0,7);ctx.ellipse(-16,0,5,4.5,0,0,7);ctx.fill();ctx.beginPath();ctx.ellipse(-.8,-.8,13.5,7,0,0,7);ctx.stroke()}
-  else if(f.k=='x'){ctx.fillStyle=`rgba(105,80,45,${a*.2})`;ctx.beginPath();ctx.ellipse(-36,0,32,18,0,0,7);ctx.fill();ctx.fillStyle=`rgba(105,80,45,${a*.5})`;hand(0,-15,1);hand(0,15,-1)}
+  const K=f.k;
+  if(K=='f'){ctx.beginPath();ctx.ellipse(0,0,13,6.5,0,0,7);ctx.moveTo(-11,0);ctx.ellipse(-16,0,5,4.5,0,0,7);ctx.fill();ctx.beginPath();ctx.ellipse(-.8,-.8,13.5,7,0,0,7);ctx.stroke()}
+  else if(K=='x'){ctx.fillStyle=`rgba(105,80,45,${a*.2})`;ctx.beginPath();ctx.ellipse(-36,0,32,18,0,0,7);ctx.fill();ctx.fillStyle=`rgba(105,80,45,${a*.5})`;hand(0,-15,1);hand(0,15,-1)}
+  else if(K=='c'){hand(0,0,f.sd);knee(-30,-f.sd*22,a)}
+  else if(K=='l'){ctx.save();ctx.lineCap='round';ctx.strokeStyle=`rgba(105,80,45,${a*.14})`;ctx.lineWidth=9;ctx.beginPath();[-14,14].forEach(y=>{ctx.moveTo(-6,y);ctx.lineTo(-30,y)});ctx.stroke();ctx.restore();
+   hand(0,-14,1);hand(0,14,-1);knee(-46,-14,a);knee(-46,14,a)}
   else hand(0,0,f.sd);
-  ctx.restore();
-  f.ta+=((f===last&&still&&s>.5?1:0)-f.ta)*.04;
-  if(f.ta>.02){ctx.font='italic 500 22px Cormorant,Georgia,serif';ctx.textAlign='center';ctx.fillStyle=`rgba(70,50,28,${f.ta*.85*wa})`;
-   const cx=W/2;f.tx.forEach((ln,j)=>ctx.fillText(ln,cx,f.y+30+j*24));
-   if(f.ta>.5)$('#hint').style.opacity=0}}
+  ctx.restore()}
+ drawText(t);
 ctx.lineCap='butt';
  for(const q of waves){const sg=Math.sin(q.dt/9*Math.PI),yy=x=>q.f+Math.sin(x*.012+q.dt*2)*10;ctx.beginPath();ctx.moveTo(0,H+6);for(let x=0;x<=W+20;x+=20)ctx.lineTo(x,yy(x));ctx.lineTo(W+20,H+6);ctx.closePath();ctx.fillStyle=`rgba(150,205,205,${.3*sg})`;ctx.fill();
   ctx.strokeStyle=`rgba(255,255,255,${.6*sg})`;ctx.lineWidth=3;ctx.beginPath();for(let x=0;x<=W+20;x+=20)x?ctx.lineTo(x,yy(x)):ctx.moveTo(x,yy(x));ctx.stroke()}
@@ -172,7 +208,12 @@ function au(){if(!A)return;const t=A.c.currentTime;
  A.S.forEach(o=>o.g.gain.setTargetAtTime(h*.05,t,.6));
  A.el.gain.setTargetAtTime(1-s*.92,t,.8);A.wg.gain.setTargetAtTime(w*.12,t,.5);
  const g=s*.16*Math.max(.15,1-pr.length/45);A.sg.gain.setTargetAtTime(g,t,.8);A.lg.gain.setTargetAtTime(g*.7,t,.8)}
-$('#back').onclick=()=>scrollTo({top:(document.documentElement.scrollHeight-innerHeight)*.55,behavior:'smooth'});
+function toWater(){scrollTo({top:(document.documentElement.scrollHeight-innerHeight)*.55,behavior:'smooth'})}
+let sw=null;
+addEventListener('pointerdown',e=>{sw=e.pointerType=='mouse'?null:{x:e.clientX,y:e.clientY,t:performance.now()}});
+addEventListener('pointerup',e=>{const g=sw;sw=null;if(!g||!started||!document.documentElement.classList.contains('lock'))return;
+ const dy=e.clientY-g.y,dx=e.clientX-g.x;if(dy>Math.max(120,H*.22)&&Math.abs(dx)<dy*.6&&performance.now()-g.t<650)toWater()});
+addEventListener('pointercancel',()=>{sw=null});
 addEventListener('wheel',e=>{if(!started||e.ctrlKey)return;const y0=scrollY;requestAnimationFrame(()=>requestAnimationFrame(()=>{if(e.deltaY<0&&scrollY===y0&&y0>0)scrollBy(0,e.deltaY*1.2)}))},{passive:true});
 $('#go').onclick=()=>{try{startAudio()}catch(e){}document.body.classList.add('on');$('#start').remove();started=true};
 </script></body></html>
