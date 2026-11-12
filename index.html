@@ -20,6 +20,7 @@ body:not(.on){overflow:hidden;height:100vh}
 #track{height:750vh}
 #sky,#grain,#ads,#cv{position:fixed;inset:0}
 #cv,#grain{pointer-events:none}
+#cv{width:100%;height:100%}
 #ads{overflow:hidden;pointer-events:none}
 .b{position:absolute;overflow:hidden;padding:6px 8px;border:2px solid #000;box-shadow:3px 3px 0 #000;border-radius:calc(var(--w,0)*50%);opacity:calc(1 - var(--w,0)*.5);transition:opacity 1.6s,scale 1.6s;animation:fl var(--fl) infinite,dr var(--d) ease-in-out infinite alternate;box-sizing:border-box}
 .b.gone{opacity:0!important;scale:1.12}
