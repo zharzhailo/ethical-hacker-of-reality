@@ -2,9 +2,19 @@
 <html lang="uk"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>етичний хакер реальності · інсталяція</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Comfortaa:wght@700&family=Cormorant+Garamond:ital,wght@1,500&family=IBM+Plex+Mono:wght@700&family=Lobster&family=Marck+Script&family=Old+Standard+TT:ital@1&family=Press+Start+2P&family=Rubik+Mono+One&family=Stalinist+One&display=swap">
+<meta name="description" content="Вірші, зашиті в рекламу. Пройди крізь банери до води, а потім до піску.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="етичний хакер реальності · інсталяція">
+<meta property="og:description" content="Вірші, зашиті в рекламу. Пройди крізь банери до води, а потім до піску.">
+<meta property="og:image" content="https://zharzhailo.github.io/ethical-hacker-of-reality/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://zharzhailo.github.io/ethical-hacker-of-reality/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://zharzhailo.github.io/ethical-hacker-of-reality/og.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arsenal:ital,wght@0,700;1,400;1,700&family=Bebas+Neue&family=Cormorant:ital,wght@1,500;1,600&family=IBM+Plex+Mono:wght@700&family=Merriweather:wght@900&family=Pixelify+Sans:wght@700&display=swap">
 <style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--hf:'Cormorant Garamond',Georgia,serif}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--hf:Cormorant,Georgia,serif}
 html,body{margin:0;background:#fff}
 body:not(.on){overflow:hidden;height:100vh}
 #track{height:750vh}
@@ -27,7 +37,7 @@ small{position:absolute;right:22px;top:2px;font:9px sans-serif;opacity:.6}
 .wt .x{pointer-events:none}
 #ld{position:fixed;left:0;right:0;bottom:0;z-index:50;pointer-events:none;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:repeating-linear-gradient(45deg,#ffeb3b 0 14px,#111 14px 28px);text-align:center}
 #ld span{background:#ffeb3b;color:#111;font:700 13px 'IBM Plex Mono',monospace;padding:3px 10px}
-#end{position:fixed;left:0;right:0;bottom:0;padding:0 16px calc(18px + env(safe-area-inset-bottom,0px));text-align:center;font:italic 500 17px var(--hf);color:#5a4326;opacity:0;pointer-events:none;line-height:1.4}
+#end{position:fixed;left:0;right:0;bottom:0;padding:0 16px calc(18px + env(safe-area-inset-bottom,0px));text-align:center;font:italic 500 18px var(--hf);color:#5a4326;opacity:0;pointer-events:none;line-height:1.4;z-index:60;text-shadow:0 0 6px #e2d0a4,0 0 2px #e2d0a4}
 #end small{position:static;display:block;font:12px var(--hf);opacity:.7}
 #hint{transition:opacity 2s}
 #start{position:fixed;inset:0;z-index:99;background:#000a;display:flex;align-items:center;justify-content:center}
@@ -48,7 +58,7 @@ const ads=$('#ads'),cv=$('#cv'),ctx=cv.getContext('2d'),sky=$('#sky');
 const LINES=["навіщо нам гаряча лінія якщо є гарячий чай","телефон у режимі вертольотика","загугли без покриття","подзвони без паличок","зброя вусів","вітровлоги","кіт на плацу наплакав","дон кіхот і санчастина","тхне безпекою","пшик доступних мереж","метадані молота","тривогозахланність","радіокучугура","риба птиця холоститься","хліб лежав маслом угору й на нього так ніхто і наступив","солдати-монади шикуються по відділеннях але щоразу довільно","номери на шоломах лотерейні кульки","пішак сигналу","смузі перешкод","вервиця нас із шиї дороги впала у комір лісу","ВО вірша","домовинофон","чернетка вихідного чистовик буднів","малюнки там само де паролі","паморозь у голові","етичний хакер реальності","презумпція непихатості","острівець безпеки на річці вулиці","викапаний каяк","на звороті мапи вочевидь CVV-код","хіть-хіть-падьом","поштомати героїв","ґрантові води","вибух у звільнення","мікроквазар казарми"];
 const CTA=["ЗАБРАТИ","ДЕТАЛЬНІШЕ","ВСТАНОВИТИ","ПРИЙНЯТИ ВСЕ","ВИГРАТИ","−90%","ПІДПИСАТИСЬ","ДОЗВОЛИТИ","немає маржі","почуваюся npc"];
 const SAND=["якщо підлогу помили піском ніг|витри її водою рук","прикопав у повітрі димок цигарки|наче в пісочку","острівець безпеки|на річці вулиці","викапаний каяк","шпиталь поїхав|шатро залишилось","чернетка вихідного|чистовик буднів","на звороті мапи|вочевидь CVV-код","вервиця нас|із шиї дороги|впала у комір лісу"];
-const FONTS=["'Old Standard TT',serif","Lobster,cursive","'Press Start 2P',monospace","'Bebas Neue',sans-serif","'Stalinist One',sans-serif","'Marck Script',cursive","'IBM Plex Mono',monospace","Comfortaa,sans-serif","'Rubik Mono One',sans-serif"];
+const FONTS=["Merriweather,serif","'Bebas Neue',sans-serif","'Pixelify Sans',monospace","'IBM Plex Mono',monospace","Arsenal,sans-serif"];
 const PAL=[['#ff2d95','#fff176'],['#00e5ff','#d500f9'],['#ffeb3b','#e91e63'],['#76ff03','#311b92'],['#ff6d00','#ffffff'],['#651fff','#ffff00'],['#00e676','#ff1744'],['#ffffff','#ff1744']];
 const ST=[[0,255,255,255],[.25,238,246,255],[.45,12,70,104],[.72,18,110,128],[.86,150,205,205],[.95,226,208,164],[1,232,214,170]];
 let W,H,D,started=false,p=0,h=0,w=0,s=0,lastP=-1,now=0,A=null;
@@ -77,12 +87,12 @@ setInterval(()=>{if(document.hidden)return;const k=Math.min(1.3,Math.max(.55,W*H
  if(live.length>T+1)kill(live[0]);
  if(w>.25&&R()<.6){ripple(R()*W,R()*H);plash(.15)}},400);
 // ripples & footprints
-const rip=[],pr=[];let lw=null,lp=null,side=1,lastMove=0,si=0;
+const MIN=matchMedia('(pointer:coarse)').matches?96:62;const rip=[],pr=[];let lw=null,lp=null,side=1,lastMove=0,si=0;
 function ripple(x,y){rip.push({x,y,t:now,m:110+R()*150});if(rip.length>36)rip.shift()}
 function move(x,y){if(!started)return;
  if(w>.12&&s<.6){if(!lw||Math.hypot(x-lw.x,y-lw.y)>38){ripple(x,y);plash(.4);lw={x,y}}}
  else if(s>.5){lastMove=now;if(!lp){lp={x,y};return}
-  const dx=x-lp.x,dy=y-lp.y,d=Math.hypot(dx,dy);if(d<62)return;
+  const dx=x-lp.x,dy=y-lp.y,d=Math.hypot(dx,dy);if(d<MIN)return;
   side*=-1;pr.push({x:x-dy/d*11*side,y:y+dx/d*11*side,a:Math.atan2(dy,dx),b:now+500,ta:0,tx:SAND[si++%SAND.length].split('|')});
   lp={x,y};step()}}
 addEventListener('pointermove',e=>move(e.clientX,e.clientY));
@@ -97,7 +107,7 @@ function frame(t){now=t;
   $('#ld').style.opacity=1-sm(.8,.88,p);$('#pc').textContent=Math.min(99,p*100|0)+'%';
   ads.style.setProperty('--w',w.toFixed(3));ads.classList.toggle('wt',w>.25);
   $('#dm').setAttribute('scale',(w*46).toFixed(1));
-  ads.style.filter=w>.02?`url(#rp) grayscale(${w*.7}) sepia(${w*.9}) hue-rotate(${w*165|0}deg) saturate(${(1+w).toFixed(2)})`:'none'}
+  ads.style.filter=w>.02?`url(#rp) grayscale(${Math.min(1,w*1.4)}) sepia(${w*.9}) hue-rotate(${w*165|0}deg) saturate(${(1+w).toFixed(2)})`:'none'}
  ctx.clearRect(0,0,W,H);
  for(let i=rip.length-1;i>=0;i--){const r=rip[i],rad=(t-r.t)/1000*70;if(rad>r.m){rip.splice(i,1);continue}
   const al=(1-rad/r.m)*.7*sm(.15,.35,p);ctx.strokeStyle=`rgba(230,248,255,${al})`;ctx.lineWidth=1.5;
@@ -109,7 +119,7 @@ function frame(t){now=t;
   ctx.fillStyle=`rgba(105,80,45,${a*.5})`;ctx.beginPath();ctx.ellipse(0,0,13,6.5,0,0,7);ctx.ellipse(-16,0,5,4.5,0,0,7);ctx.fill();
   ctx.strokeStyle=`rgba(255,246,220,${a*.55})`;ctx.lineWidth=1.2;ctx.beginPath();ctx.ellipse(-.8,-.8,13.5,7,0,0,7);ctx.stroke();ctx.restore();
   f.ta+=((f===last&&still&&s>.5?1:0)-f.ta)*.04;
-  if(f.ta>.02){ctx.font='italic 500 22px "Cormorant Garamond",Georgia,serif';ctx.textAlign='center';ctx.fillStyle=`rgba(70,50,28,${f.ta*.85})`;
+  if(f.ta>.02){ctx.font='italic 500 22px Cormorant,Georgia,serif';ctx.textAlign='center';ctx.fillStyle=`rgba(70,50,28,${f.ta*.85})`;
    const cx=Math.min(W-110,Math.max(110,f.x));f.tx.forEach((ln,j)=>ctx.fillText(ln,cx,f.y+30+j*24));
    if(f.ta>.5)$('#hint').style.opacity=0}}
  au();requestAnimationFrame(frame)}
